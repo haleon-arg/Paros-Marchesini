@@ -344,9 +344,11 @@
 
 <script>
   const CATEGORIES = ['Comprimidos','Pinzas','Rotrasobres','Mordazas','Banda elástica','VR','Otros'];
-  const TIMES = ['< 5 min','> 5 y < 30 min','> 30 min'];
+  const TIMES = ['Menos de 5 min', 'Entre 5 y 10 min', 'Más de 10 min'];
 
   const STORAGE_KEY = 'paros_llenadores_v1';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz1j39zIUHnEjjw6SBtb06IIHxhiipkEPvkho25qdBpnY1KWco39JGvuY9JSHoLu7c2RQ/exec';
+  const SHEET_LLENADORES = 'Paros_Llenadores';
 
   let selectedMachine = null;
   let selectedCat = null;
@@ -364,7 +366,23 @@
     } catch(e) { stops = []; }
   }
 
-  loadData();
+
+  async function saveToSheets(stop) {
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sheet: SHEET_NAME,
+          headers: ['Fecha', 'Hora', 'Llenador', 'Categoría', 'Duración'],
+          rows: [[stop.date, stop.timestamp, stop.machine, stop.category, stop.time]]
+        })
+      });
+    } catch(e) { console.warn('Error Sheets:', e); }
+  }
+
+    loadData();
 
   // Render category buttons
   const catGrid = document.getElementById('catGrid');
@@ -432,6 +450,7 @@
       date: getDate()
     });
     saveData();
+    saveToSheets(stops[stops.length - 1]);
     renderLog();
     updateStats();
     showToast('Paro registrado ✓');
