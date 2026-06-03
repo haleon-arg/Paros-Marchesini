@@ -7,286 +7,51 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #f4f3ef;
-    --surface: #ffffff;
-    --border: #e0ddd5;
-    --text: #1a1a18;
-    --text-muted: #7a7870;
-    --blue: #185FA5;
-    --blue-light: #E6F1FB;
-    --blue-dark: #0C447C;
-    --green: #3B6D11;
-    --green-light: #EAF3DE;
-    --red: #A32D2D;
-    --accent: #185FA5;
+    --bg: #f4f3ef; --surface: #ffffff; --border: #e0ddd5;
+    --text: #1a1a18; --text-muted: #7a7870;
+    --blue: #185FA5; --blue-light: #E6F1FB; --blue-dark: #0C447C;
+    --green: #3B6D11; --green-light: #EAF3DE; --red: #A32D2D;
   }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    font-size: 15px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 24px 16px 48px;
-  }
-
-  header {
-    width: 100%;
-    max-width: 540px;
-    margin-bottom: 24px;
-  }
-
-  header h1 {
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--text);
-    letter-spacing: -0.3px;
-  }
-
-  header p {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-top: 3px;
-  }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-    width: 100%;
-    max-width: 540px;
-    margin-bottom: 14px;
-  }
-
-  .section-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 10px;
-  }
-
-  .machine-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  .machine-btn {
-    padding: 16px 8px;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    background: var(--bg);
-    cursor: pointer;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text-muted);
-    transition: all 0.15s;
-    letter-spacing: 1px;
-  }
-
-  .machine-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
-  .machine-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
-
-  .cat-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 8px;
-  }
-
-  .cat-btn {
-    padding: 10px 8px;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    background: var(--bg);
-    cursor: pointer;
-    font-size: 13px;
-    color: var(--text);
-    transition: all 0.15s;
-    text-align: center;
-  }
-
-  .cat-btn:hover { border-color: var(--blue); background: var(--blue-light); color: var(--blue-dark); }
-  .cat-btn.active { background: var(--blue-light); border-color: var(--blue); color: var(--blue-dark); font-weight: 600; }
-
-  .time-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-  }
-
-  .time-btn {
-    padding: 10px 6px;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    background: var(--bg);
-    cursor: pointer;
-    font-size: 12px;
-    color: var(--text);
-    transition: all 0.15s;
-    text-align: center;
-    line-height: 1.4;
-  }
-
-  .time-btn:hover { border-color: var(--green); background: var(--green-light); color: var(--green); }
-  .time-btn.active { background: var(--green-light); border-color: var(--green); color: var(--green); font-weight: 600; }
-
-  .add-btn {
-    width: 100%;
-    max-width: 540px;
-    padding: 14px;
-    border: none;
-    border-radius: 10px;
-    background: var(--blue);
-    color: #fff;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-bottom: 14px;
-    transition: opacity 0.15s, transform 0.1s;
-    letter-spacing: 0.2px;
-  }
-
-  .add-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-  .add-btn:not(:disabled):hover { opacity: 0.9; }
-  .add-btn:not(:disabled):active { transform: scale(0.98); }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 14px;
-    width: 100%;
-    max-width: 540px;
-  }
-
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 10px;
-    text-align: center;
-  }
-
-  .stat-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
-  .stat-value { font-size: 26px; font-weight: 700; color: var(--text); }
-
-  .log-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    width: 100%;
-    max-width: 540px;
-    overflow: hidden;
-    margin-bottom: 14px;
-  }
-
-  .log-header {
-    padding: 14px 18px 10px;
-    border-bottom: 1px solid var(--border);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-  }
-
-  .log-list { max-height: 280px; overflow-y: auto; }
-
-  .log-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 18px;
-    border-bottom: 1px solid var(--border);
-    font-size: 13px;
-    transition: background 0.1s;
-  }
-
-  .log-item:last-child { border-bottom: none; }
-  .log-item:hover { background: var(--bg); }
-
-  .badge-machine {
-    font-weight: 700;
-    font-size: 12px;
-    color: var(--blue-dark);
-    background: var(--blue-light);
-    padding: 3px 8px;
-    border-radius: 20px;
-    min-width: 40px;
-    text-align: center;
-  }
-
-  .log-cat { flex: 1; color: var(--text); }
-  .log-time { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
-  .log-hour { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
-
-  .del-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--border);
-    font-size: 15px;
-    padding: 2px 4px;
-    line-height: 1;
-    border-radius: 4px;
-    transition: color 0.15s;
-  }
-
-  .del-btn:hover { color: var(--red); }
-
-  .empty-msg {
-    text-align: center;
-    padding: 32px;
-    color: var(--text-muted);
-    font-size: 13px;
-  }
-
-  .export-btn {
-    width: 100%;
-    max-width: 540px;
-    padding: 12px;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    background: var(--surface);
-    color: var(--text);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: background 0.15s;
-  }
-
-  .export-btn:hover { background: var(--bg); border-color: #bbb; }
-
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(10px);
-    background: #1a1a18;
-    color: #fff;
-    padding: 10px 22px;
-    border-radius: 8px;
-    font-size: 13px;
-    opacity: 0;
-    transition: all 0.25s;
-    pointer-events: none;
-    z-index: 999;
-    white-space: nowrap;
-  }
-
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,sans-serif; font-size:15px; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:24px 16px 48px; }
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; width:100%; max-width:540px; margin-bottom:14px; }
+  .section-label { font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px; }
+  .machine-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .machine-btn { padding:16px 8px; border:1.5px solid var(--border); border-radius:10px; background:var(--bg); cursor:pointer; font-size:20px; font-weight:700; color:var(--text-muted); transition:all .15s; letter-spacing:1px; }
+  .machine-btn:hover { border-color:var(--blue); color:var(--blue); background:var(--blue-light); }
+  .machine-btn.active { background:var(--blue); color:#fff; border-color:var(--blue); }
+  .cat-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:8px; }
+  .cat-btn { padding:10px 8px; border:1.5px solid var(--border); border-radius:8px; background:var(--bg); cursor:pointer; font-size:13px; color:var(--text); transition:all .15s; text-align:center; }
+  .cat-btn:hover { border-color:var(--blue); background:var(--blue-light); color:var(--blue-dark); }
+  .cat-btn.active { background:var(--blue-light); border-color:var(--blue); color:var(--blue-dark); font-weight:600; }
+  .time-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .time-btn { padding:10px 6px; border:1.5px solid var(--border); border-radius:8px; background:var(--bg); cursor:pointer; font-size:12px; color:var(--text); transition:all .15s; text-align:center; line-height:1.4; }
+  .time-btn:hover { border-color:var(--green); background:var(--green-light); color:var(--green); }
+  .time-btn.active { background:var(--green-light); border-color:var(--green); color:var(--green); font-weight:600; }
+  .add-btn { width:100%; max-width:540px; padding:14px; border:none; border-radius:10px; background:var(--blue); color:#fff; font-size:15px; font-weight:600; cursor:pointer; margin-bottom:14px; transition:opacity .15s,transform .1s; }
+  .add-btn:disabled { opacity:.3; cursor:not-allowed; }
+  .add-btn:not(:disabled):hover { opacity:.9; }
+  .add-btn:not(:disabled):active { transform:scale(.98); }
+  .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; width:100%; max-width:540px; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 10px; text-align:center; }
+  .stat-label { font-size:11px; color:var(--text-muted); margin-bottom:4px; }
+  .stat-value { font-size:26px; font-weight:700; color:var(--text); }
+  .log-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; width:100%; max-width:540px; overflow:hidden; margin-bottom:14px; }
+  .log-header { padding:14px 18px 10px; border-bottom:1px solid var(--border); font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); }
+  .log-list { max-height:280px; overflow-y:auto; }
+  .log-item { display:flex; align-items:center; gap:10px; padding:10px 18px; border-bottom:1px solid var(--border); font-size:13px; }
+  .log-item:last-child { border-bottom:none; }
+  .log-item:hover { background:var(--bg); }
+  .badge-machine { font-weight:700; font-size:12px; color:var(--blue-dark); background:var(--blue-light); padding:3px 8px; border-radius:20px; min-width:40px; text-align:center; }
+  .log-cat { flex:1; color:var(--text); }
+  .log-time,.log-hour { font-size:11px; color:var(--text-muted); white-space:nowrap; }
+  .del-btn { background:none; border:none; cursor:pointer; color:var(--border); font-size:15px; padding:2px 4px; border-radius:4px; transition:color .15s; }
+  .del-btn:hover { color:var(--red); }
+  .empty-msg { text-align:center; padding:32px; color:var(--text-muted); font-size:13px; }
+  .export-btn { width:100%; max-width:540px; padding:12px; border:1.5px solid var(--border); border-radius:10px; background:var(--surface); color:var(--text); font-size:13px; font-weight:500; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .export-btn:hover { background:var(--bg); }
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(10px); background:#1a1a18; color:#fff; padding:10px 22px; border-radius:8px; font-size:13px; opacity:0; transition:all .25s; pointer-events:none; z-index:999; white-space:nowrap; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
@@ -300,7 +65,6 @@
   <button onclick="showSupervisor()" style="padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;font-weight:500;cursor:pointer;">Vista supervisor</button>
 </div>
 
-<!-- Llenador -->
 <div class="card">
   <p class="section-label">Llenador</p>
   <div class="machine-row">
@@ -309,125 +73,165 @@
   </div>
 </div>
 
-<!-- Categoría -->
 <div class="card">
   <p class="section-label">Categoría del paro</p>
   <div class="cat-grid" id="catGrid"></div>
 </div>
 
-<!-- Duración -->
 <div class="card">
   <p class="section-label">Duración</p>
   <div class="time-grid" id="timeGrid"></div>
 </div>
 
-<!-- Botón registrar -->
 <button class="add-btn" id="addBtn" onclick="addStop()" disabled>+ Registrar paro</button>
 
-<!-- Stats -->
 <div class="stats-grid">
   <div class="stat-card"><p class="stat-label">Total</p><p class="stat-value" id="totalCount">0</p></div>
   <div class="stat-card"><p class="stat-label">Llenador 631</p><p class="stat-value" id="count631">0</p></div>
   <div class="stat-card"><p class="stat-label">Llenador 632</p><p class="stat-value" id="count632">0</p></div>
 </div>
 
-<!-- Log -->
 <div class="log-card">
   <div class="log-header">Paros registrados</div>
-  <div class="log-list" id="logList">
-    <div class="empty-msg">Sin paros registrados aún</div>
-  </div>
+  <div class="log-list" id="logList"><div class="empty-msg">Sin paros registrados aún</div></div>
 </div>
 
-<!-- Export -->
-<button class="export-btn" onclick="exportExcel()">
-  ↓ &nbsp;Exportar a Excel
-</button>
+<button class="export-btn" onclick="exportExcel()">↓ &nbsp;Exportar a Excel</button>
 
 <div class="toast" id="toast"></div>
+
+<!-- VISTA SUPERVISOR -->
+<div id="sv" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);overflow-y:auto;z-index:100;">
+  <div style="background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;">
+    <div>
+      <div style="font-size:16px;font-weight:600;">Vista supervisor</div>
+      <div style="font-size:12px;color:var(--text-muted);">Registros consolidados — Llenadores</div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="loadSV()" style="padding:7px 14px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;cursor:pointer;">Actualizar</button>
+      <button onclick="exportSV()" style="padding:7px 14px;border-radius:6px;border:none;background:var(--green);color:#fff;font-size:13px;cursor:pointer;">Exportar Excel</button>
+      <button onclick="hideSupervisor()" style="padding:7px 14px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;cursor:pointer;">Volver</button>
+    </div>
+  </div>
+  <div style="max-width:1000px;margin:0 auto;padding:20px 16px;">
+    <!-- KPIs -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+      <div class="stat-card"><p class="stat-label">Total paros</p><p class="stat-value" style="color:var(--blue);" id="sv-total">-</p></div>
+      <div class="stat-card"><p class="stat-label">Llenador 631</p><p class="stat-value" id="sv-631">-</p></div>
+      <div class="stat-card"><p class="stat-label">Llenador 632</p><p class="stat-value" id="sv-632">-</p></div>
+      <div class="stat-card"><p class="stat-label">Hoy</p><p class="stat-value" style="color:var(--green);" id="sv-hoy">-</p></div>
+    </div>
+    <!-- Resumen categorías -->
+    <div id="sv-resumen" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:20px;"></div>
+    <!-- Filtros -->
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+      <select id="sv-fmes" onchange="renderSV()" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:13px;color:var(--text);">
+        <option value="">Todos los meses</option>
+        <option value="01">Enero</option><option value="02">Febrero</option><option value="03">Marzo</option>
+        <option value="04">Abril</option><option value="05">Mayo</option><option value="06">Junio</option>
+        <option value="07">Julio</option><option value="08">Agosto</option><option value="09">Septiembre</option>
+        <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+      </select>
+      <input type="date" id="sv-ffecha" onchange="renderSV()" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:13px;"/>
+      <select id="sv-fcat" onchange="renderSV()" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:13px;color:var(--text);">
+        <option value="">Todas las categorías</option>
+      </select>
+      <select id="sv-flin" onchange="renderSV()" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:13px;color:var(--text);">
+        <option value="">Todos los llenadores</option>
+        <option value="631">631</option><option value="632">632</option>
+      </select>
+      <select id="sv-fdur" onchange="renderSV()" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:13px;color:var(--text);">
+        <option value="">Todas las duraciones</option>
+        <option value="Menos de 5 min">Menos de 5 min</option>
+        <option value="Entre 5 y 10 min">Entre 5 y 10 min</option>
+        <option value="Más de 10 min">Más de 10 min</option>
+      </select>
+    </div>
+    <!-- Tabla -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr style="background:#1a2e4a;">
+            <th style="color:#fff;font-size:12px;font-weight:500;padding:10px 12px;text-align:left;">Fecha</th>
+            <th style="color:#fff;font-size:12px;font-weight:500;padding:10px 12px;text-align:left;">Hora</th>
+            <th style="color:#fff;font-size:12px;font-weight:500;padding:10px 12px;text-align:left;">Llenador</th>
+            <th style="color:#fff;font-size:12px;font-weight:500;padding:10px 12px;text-align:left;">Categoría</th>
+            <th style="color:#fff;font-size:12px;font-weight:500;padding:10px 12px;text-align:left;">Duración</th>
+          </tr>
+        </thead>
+        <tbody id="sv-tbody"><tr><td colspan="5" class="empty-msg">Cargando...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
 <script>
   const CATEGORIES = ['Comprimidos','Pinzas','Rotrasobres','Mordazas','Banda elástica','VR','Otros'];
   const TIMES = ['Menos de 5 min', 'Entre 5 y 10 min', 'Más de 10 min'];
-
   const STORAGE_KEY = 'paros_llenadores_v1';
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz1j39zIUHnEjjw6SBtb06IIHxhiipkEPvkho25qdBpnY1KWco39JGvuY9JSHoLu7c2RQ/exec';
   const SHEET_LLENADORES = 'Paros_Llenadores';
+  const SV_SHEET_ID = '166V7Tu-YEZ368aC1SaVqyjtP_PUII-fIMnexxEyqtQ0';
 
-  let selectedMachine = null;
-  let selectedCat = null;
-  let selectedTime = null;
-  let stops = [];
+  let selectedMachine = null, selectedCat = null, selectedTime = null, stops = [];
+  let svData = [];
 
-  function saveData() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(stops)); } catch(e) {}
-  }
-
-  function loadData() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) stops = JSON.parse(raw);
-    } catch(e) { stops = []; }
-  }
-
+  function saveData() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(stops)); } catch(e) {} }
+  function loadData() { try { const r = localStorage.getItem(STORAGE_KEY); if(r) stops = JSON.parse(r); } catch(e) { stops = []; } }
 
   async function saveToSheets(stop) {
     try {
       await fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
+        method: 'POST', mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sheet: SHEET_LLENADORES,
-          headers: ['Fecha', 'Hora', 'Llenador', 'Categoría', 'Duración'],
+          headers: ['Fecha','Hora','Llenador','Categoría','Duración'],
           rows: [[stop.date, stop.timestamp, stop.machine, stop.category, stop.time]]
         })
       });
     } catch(e) { console.warn('Error Sheets:', e); }
   }
 
-    loadData();
-
-  // Render category buttons
+  // Render buttons
   const catGrid = document.getElementById('catGrid');
-  CATEGORIES.forEach(c => {
+  CATEGORIES.forEach(function(c) {
     const btn = document.createElement('button');
-    btn.className = 'cat-btn';
-    btn.textContent = c;
-    btn.onclick = () => selectCat(c, btn);
+    btn.className = 'cat-btn'; btn.textContent = c;
+    btn.onclick = function() { selectCat(c, btn); };
     catGrid.appendChild(btn);
   });
 
-  // Render time buttons
   const timeGrid = document.getElementById('timeGrid');
-  TIMES.forEach(t => {
+  TIMES.forEach(function(t) {
     const btn = document.createElement('button');
-    btn.className = 'time-btn';
-    btn.textContent = t;
-    btn.onclick = () => selectTime(t, btn);
+    btn.className = 'time-btn'; btn.textContent = t;
+    btn.onclick = function() { selectTime(t, btn); };
     timeGrid.appendChild(btn);
   });
 
+  // Load and render
+  loadData();
   renderLog();
   updateStats();
 
   function selectMachine(m) {
     selectedMachine = m;
-    document.getElementById('m631').classList.toggle('active', m === '631');
-    document.getElementById('m632').classList.toggle('active', m === '632');
+    document.getElementById('m631').classList.toggle('active', m==='631');
+    document.getElementById('m632').classList.toggle('active', m==='632');
     checkReady();
   }
 
   function selectCat(c, btn) {
     selectedCat = c;
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.cat-btn').forEach(function(b){ b.classList.remove('active'); });
     btn.classList.add('active');
     checkReady();
   }
 
   function selectTime(t, btn) {
     selectedTime = t;
-    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.time-btn').forEach(function(b){ b.classList.remove('active'); });
     btn.classList.add('active');
     checkReady();
   }
@@ -436,120 +240,70 @@
     document.getElementById('addBtn').disabled = !(selectedMachine && selectedCat && selectedTime);
   }
 
-  function getNow() {
-    const d = new Date();
-    return d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-  }
-
-  function getDate() {
-    return new Date().toLocaleDateString('es-AR');
-  }
+  function getNow() { return new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'}); }
+  function getDate() { return new Date().toLocaleDateString('es-AR'); }
 
   function addStop() {
-    stops.push({
-      machine: selectedMachine,
-      category: selectedCat,
-      time: selectedTime,
-      timestamp: getNow(),
-      date: getDate()
-    });
+    const stop = { machine: selectedMachine, category: selectedCat, time: selectedTime, timestamp: getNow(), date: getDate() };
+    stops.push(stop);
     saveData();
-    saveToSheets(stops[stops.length - 1]);
+    saveToSheets(stop);
     renderLog();
     updateStats();
     showToast('Paro registrado ✓');
-
-    selectedCat = null;
-    selectedTime = null;
-    document.querySelectorAll('.cat-btn, .time-btn').forEach(b => b.classList.remove('active'));
+    selectedCat = null; selectedTime = null;
+    document.querySelectorAll('.cat-btn, .time-btn').forEach(function(b){ b.classList.remove('active'); });
     checkReady();
   }
 
   function deleteStop(idx) {
     if (confirm('¿Eliminar este paro?')) {
       stops.splice(idx, 1);
-      saveData();
-      renderLog();
-      updateStats();
+      saveData(); renderLog(); updateStats();
     }
   }
 
   function renderLog() {
     const list = document.getElementById('logList');
-    if (stops.length === 0) {
-      list.innerHTML = '<div class="empty-msg">Sin paros registrados aún</div>';
-      return;
-    }
-    list.innerHTML = stops.slice().reverse().map((s, ri) => {
+    if (stops.length === 0) { list.innerHTML = '<div class="empty-msg">Sin paros registrados aún</div>'; return; }
+    list.innerHTML = stops.slice().reverse().map(function(s, ri) {
       const i = stops.length - 1 - ri;
-      return `<div class="log-item">
-        <span class="badge-machine">${s.machine}</span>
-        <span class="log-cat">${s.category}</span>
-        <span class="log-time">${s.time}</span>
-        <span class="log-hour">${s.timestamp}</span>
-        <button class="del-btn" onclick="deleteStop(${i})" title="Eliminar">✕</button>
-      </div>`;
+      return '<div class="log-item"><span class="badge-machine">' + s.machine + '</span><span class="log-cat">' + s.category + '</span><span class="log-time">' + s.time + '</span><span class="log-hour">' + s.timestamp + '</span><button class="del-btn" onclick="deleteStop(' + i + ')" title="Eliminar">✕</button></div>';
     }).join('');
   }
 
   function updateStats() {
     document.getElementById('totalCount').textContent = stops.length;
-    document.getElementById('count631').textContent = stops.filter(s => s.machine === '631').length;
-    document.getElementById('count632').textContent = stops.filter(s => s.machine === '632').length;
+    document.getElementById('count631').textContent = stops.filter(function(s){ return s.machine==='631'; }).length;
+    document.getElementById('count632').textContent = stops.filter(function(s){ return s.machine==='632'; }).length;
   }
 
   function showToast(msg) {
     const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2000);
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 2000);
   }
 
   function exportExcel() {
     if (stops.length === 0) { showToast('No hay paros para exportar'); return; }
-
-    const rows = stops.map((s, i) => ({
-      'N°': i + 1,
-      'Fecha': s.date,
-      'Hora': s.timestamp,
-      'Llenador': s.machine,
-      'Categoría': s.category,
-      'Duración': s.time
-    }));
-
-    const resumen631 = {};
-    const resumen632 = {};
-    CATEGORIES.forEach(c => { resumen631[c] = 0; resumen632[c] = 0; });
-    stops.forEach(s => {
-      if (s.machine === '631') resumen631[s.category]++;
-      else resumen632[s.category]++;
-    });
-    const resumenRows = CATEGORIES.map(c => ({
-      'Categoría': c,
-      'Llenador 631': resumen631[c],
-      'Llenador 632': resumen632[c],
-      'Total': resumen631[c] + resumen632[c]
-    }));
-
+    const rows = stops.map(function(s, i) { return {'N°':i+1,'Fecha':s.date,'Hora':s.timestamp,'Llenador':s.machine,'Categoría':s.category,'Duración':s.time}; });
+    const resumen631 = {}, resumen632 = {};
+    CATEGORIES.forEach(function(c){ resumen631[c]=0; resumen632[c]=0; });
+    stops.forEach(function(s){ if(s.machine==='631') resumen631[s.category]++; else resumen632[s.category]++; });
+    const resumenRows = CATEGORIES.map(function(c){ return {'Categoría':c,'Llenador 631':resumen631[c],'Llenador 632':resumen632[c],'Total':resumen631[c]+resumen632[c]}; });
     const wb = XLSX.utils.book_new();
-
     const ws1 = XLSX.utils.json_to_sheet(rows);
     ws1['!cols'] = [{wch:4},{wch:12},{wch:8},{wch:12},{wch:18},{wch:22}];
     XLSX.utils.book_append_sheet(wb, ws1, 'Registro de Paros');
-
     const ws2 = XLSX.utils.json_to_sheet(resumenRows);
     ws2['!cols'] = [{wch:18},{wch:14},{wch:14},{wch:10}];
     XLSX.utils.book_append_sheet(wb, ws2, 'Resumen');
-
     const fecha = new Date().toLocaleDateString('es-AR').replace(/\//g,'-');
-    XLSX.writeFile(wb, `paros_llenadores_${fecha}.xlsx`);
+    XLSX.writeFile(wb, 'paros_llenadores_' + fecha + '.xlsx');
     showToast('Excel exportado ✓');
   }
 
   // ===== VISTA SUPERVISOR =====
-  var SV_SHEET_ID = '166V7Tu-YEZ368aC1SaVqyjtP_PUII-fIMnexxEyqtQ0';
-  var svData = [];
-
   function showSupervisor() {
     document.getElementById('sv').style.display = 'block';
     document.body.style.overflow = 'hidden';
@@ -574,7 +328,7 @@
   }
 
   function loadSV() {
-    document.getElementById('sv-tbody').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:32px;">Cargando...</td></tr>';
+    document.getElementById('sv-tbody').innerHTML = '<tr><td colspan="5" class="empty-msg">Cargando...</td></tr>';
     var url = 'https://docs.google.com/spreadsheets/d/' + SV_SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=Paros_Llenadores&t=' + Date.now();
     fetch(url)
       .then(function(r){ return r.text(); })
@@ -584,7 +338,7 @@
         for (var i = 1; i < lines.length; i++) {
           var cols = svParseCSV(lines[i]);
           if (cols.length >= 4 && cols[0]) {
-            svData.push({ fecha: cols[0], hora: cols[1], llenador: cols[2], categoria: cols[3], duracion: cols[4]||'' });
+            svData.push({ fecha:cols[0], hora:cols[1], llenador:cols[2], categoria:cols[3], duracion:cols[4]||'' });
           }
         }
         updateSVKPIs();
@@ -592,7 +346,7 @@
         renderSV();
       })
       .catch(function(){
-        document.getElementById('sv-tbody').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--red);padding:32px;">Error al cargar. Verificá la conexión.</td></tr>';
+        document.getElementById('sv-tbody').innerHTML = '<tr><td colspan="5" class="empty-msg" style="color:var(--red);">Error al cargar. Verificá la conexión.</td></tr>';
       });
   }
 
@@ -636,125 +390,28 @@
     rows.forEach(function(r){ catCount[r.categoria]=(catCount[r.categoria]||0)+1; });
     var rg = document.getElementById('sv-resumen');
     rg.innerHTML = Object.keys(catCount).sort(function(a,b){ return catCount[b]-catCount[a]; }).map(function(c){
-      return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;">' +
-        '<span style="font-size:13px;">' + c + '</span>' +
-        '<span style="font-size:22px;font-weight:600;color:var(--blue);">' + catCount[c] + '</span></div>';
+      return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;">' + c + '</span><span style="font-size:22px;font-weight:600;color:var(--blue);">' + catCount[c] + '</span></div>';
     }).join('');
-
     var tbody = document.getElementById('sv-tbody');
-    if (rows.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:32px;">Sin registros para los filtros seleccionados</td></tr>';
-      return;
-    }
+    if (rows.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="empty-msg">Sin registros para los filtros seleccionados</td></tr>'; return; }
     rows.sort(function(a,b){ return b.fecha.localeCompare(a.fecha)||b.hora.localeCompare(a.hora); });
     tbody.innerHTML = rows.map(function(r){
-      return '<tr style="border-bottom:1px solid var(--border);">' +
-        '<td style="padding:10px 12px;font-size:13px;">' + r.fecha + '</td>' +
-        '<td style="padding:10px 12px;font-size:13px;">' + r.hora + '</td>' +
-        '<td style="padding:10px 12px;font-size:13px;font-weight:600;color:var(--blue-dark);">' + r.llenador + '</td>' +
-        '<td style="padding:10px 12px;font-size:13px;">' + r.categoria + '</td>' +
-        '<td style="padding:10px 12px;font-size:13px;">' + r.duracion + '</td></tr>';
+      return '<tr style="border-bottom:1px solid var(--border);"><td style="padding:10px 12px;font-size:13px;">' + r.fecha + '</td><td style="padding:10px 12px;font-size:13px;">' + r.hora + '</td><td style="padding:10px 12px;font-size:13px;font-weight:600;color:var(--blue-dark);">' + r.llenador + '</td><td style="padding:10px 12px;font-size:13px;">' + r.categoria + '</td><td style="padding:10px 12px;font-size:13px;">' + r.duracion + '</td></tr>';
     }).join('');
   }
 
   function exportSV() {
     var rows = getSVFiltered();
     if (rows.length === 0) { showToast('No hay datos para exportar'); return; }
-    var data = rows.map(function(r,i){ return {'N\u00b0':i+1,'Fecha':r.fecha,'Hora':r.hora,'Llenador':r.llenador,'Categor\u00eda':r.categoria,'Duraci\u00f3n':r.duracion}; });
+    var data = rows.map(function(r,i){ return {'N°':i+1,'Fecha':r.fecha,'Hora':r.hora,'Llenador':r.llenador,'Categoría':r.categoria,'Duración':r.duracion}; });
     var wb = XLSX.utils.book_new();
     var ws = XLSX.utils.json_to_sheet(data);
     ws['!cols'] = [{wch:4},{wch:12},{wch:8},{wch:10},{wch:24},{wch:18}];
     XLSX.utils.book_append_sheet(wb, ws, 'Paros Llenadores');
-    var fecha = new Date().toLocaleDateString('es-AR').replace(/\/g,'-');
+    var fecha = new Date().toLocaleDateString('es-AR').replace(/\//g,'-');
     XLSX.writeFile(wb, 'supervisor_llenadores_' + fecha + '.xlsx');
+    showToast('Excel exportado ✓');
   }
-
 </script>
-
-<!-- ===== VISTA SUPERVISOR ===== -->
-<div id="sv" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);overflow-y:auto;z-index:100;">
-
-  <!-- Header -->
-  <div style="background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;">
-    <div>
-      <div style="font-size:16px;font-weight:600;">Vista supervisor</div>
-      <div style="font-size:12px;color:var(--text-muted);">Registros consolidados</div>
-    </div>
-    <div style="display:flex;gap:8px;">
-      <button onclick="loadSV()" style="padding:7px 14px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;font-weight:500;cursor:pointer;">Actualizar</button>
-      <button onclick="exportSV()" style="padding:7px 14px;border-radius:6px;border:none;background:#3B6D11;color:#fff;font-size:13px;font-weight:500;cursor:pointer;">Exportar Excel</button>
-      <button onclick="hideSupervisor()" style="padding:7px 14px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;font-weight:500;cursor:pointer;">Volver</button>
-    </div>
-  </div>
-
-  <div style="max-width:1100px;margin:0 auto;padding:20px 16px;">
-
-    <!-- KPIs -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;">
-        <div style="font-size:11px;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Total paros</div>
-        <div style="font-size:28px;font-weight:600;color:var(--blue);" id="sv-total">-</div>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;">
-        <div style="font-size:11px;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Llenador 631</div>
-        <div style="font-size:28px;font-weight:600;" id="sv-631">-</div>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;">
-        <div style="font-size:11px;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Llenador 632</div>
-        <div style="font-size:28px;font-weight:600;" id="sv-632">-</div>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;">
-        <div style="font-size:11px;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Hoy</div>
-        <div style="font-size:28px;font-weight:600;color:#3B6D11;" id="sv-hoy">-</div>
-      </div>
-    </div>
-
-    <!-- Resumen por categoría -->
-    <div id="sv-resumen" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:20px;"></div>
-
-    <!-- Filtros -->
-    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
-      <select id="sv-fmes" onchange="renderSV()" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:13px;color:var(--text);">
-        <option value="">Todos los meses</option>
-        <option value="01">Enero</option><option value="02">Febrero</option><option value="03">Marzo</option>
-        <option value="04">Abril</option><option value="05">Mayo</option><option value="06">Junio</option>
-        <option value="07">Julio</option><option value="08">Agosto</option><option value="09">Septiembre</option>
-        <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
-      </select>
-      <input type="date" id="sv-ffecha" onchange="renderSV()" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:13px;color:var(--text);"/>
-      <select id="sv-fcat" onchange="renderSV()" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:13px;color:var(--text);">
-        <option value="">Todas las categorías</option>
-      </select>
-      <select id="sv-flin" onchange="renderSV()" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:13px;color:var(--text);">
-        <option value="">Todos los llenadores</option>
-        <option value="631">631</option>
-        <option value="632">632</option>
-      </select>
-      <select id="sv-fdur" onchange="renderSV()" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:13px;color:var(--text);">
-        <option value="">Todas las duraciones</option>
-        <option value="Menos de 5 min">Menos de 5 min</option>
-        <option value="Entre 5 y 10 min">Entre 5 y 10 min</option>
-        <option value="Más de 10 min">Más de 10 min</option>
-      </select>
-    </div>
-
-    <!-- Tabla -->
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
-      <table style="width:100%;border-collapse:collapse;">
-        <thead>
-          <tr style="background:#1a2e4a;">
-            <th style="color:#fff;font-size:12px;font-weight:500;padding:10px 12px;text-align:left;">Fecha</th>
-            <th style="color:#fff;font-size:12px;font-weight:500;padding:10px 12px;text-align:left;">Hora</th>
-            <th style="color:#fff;font-size:12px;font-weight:500;padding:10px 12px;text-align:left;">Llenador</th>
-            <th style="color:#fff;font-size:12px;font-weight:500;padding:10px 12px;text-align:left;">Categoría</th>
-            <th style="color:#fff;font-size:12px;font-weight:500;padding:10px 12px;text-align:left;">Duración</th>
-          </tr>
-        </thead>
-        <tbody id="sv-tbody"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:32px;">Cargando...</td></tr></tbody>
-      </table>
-    </div>
-
-  </div>
-</div>
 </body>
 </html>
