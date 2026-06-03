@@ -329,16 +329,16 @@
 
   function loadSV() {
     document.getElementById('sv-tbody').innerHTML = '<tr><td colspan="5" class="empty-msg">Cargando...</td></tr>';
-    var url = 'https://docs.google.com/spreadsheets/d/' + SV_SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=Paros_Llenadores&t=' + Date.now();
+    var url = 'https://script.google.com/macros/s/AKfycbz1j39zIUHnEjjw6SBtb06IIHxhiipkEPvkho25qdBpnY1KWco39JGvuY9JSHoLu7c2RQ/exec?action=get&sheet=Paros_Llenadores&t=' + Date.now();
     fetch(url)
-      .then(function(r){ return r.text(); })
-      .then(function(csv){
-        var lines = csv.trim().split('\n');
+      .then(function(r){ return r.json(); })
+      .then(function(data){
         svData = [];
-        for (var i = 1; i < lines.length; i++) {
-          var cols = svParseCSV(lines[i]);
+        var rows = data.rows || [];
+        for (var i = 0; i < rows.length; i++) {
+          var cols = rows[i];
           if (cols.length >= 4 && cols[0]) {
-            svData.push({ fecha:cols[0], hora:cols[1], llenador:cols[2], categoria:cols[3], duracion:cols[4]||'' });
+            svData.push({ fecha:String(cols[0]), hora:String(cols[1]), llenador:String(cols[2]), categoria:String(cols[3]), duracion:String(cols[4]||'') });
           }
         }
         updateSVKPIs();
