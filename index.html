@@ -374,7 +374,7 @@
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          sheet: SHEET_NAME,
+          sheet: SHEET_LLENADORES,
           headers: ['Fecha', 'Hora', 'Llenador', 'Categoría', 'Duración'],
           rows: [[stop.date, stop.timestamp, stop.machine, stop.category, stop.time]]
         })
