@@ -545,6 +545,130 @@
     XLSX.writeFile(wb, `paros_llenadores_${fecha}.xlsx`);
     showToast('Excel exportado ✓');
   }
+
+  // ===== VISTA SUPERVISOR =====
+  var SV_SHEET_ID = '166V7Tu-YEZ368aC1SaVqyjtP_PUII-fIMnexxEyqtQ0';
+  var svData = [];
+
+  function showSupervisor() {
+    document.getElementById('sv').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    if (svData.length === 0) loadSV();
+  }
+
+  function hideSupervisor() {
+    document.getElementById('sv').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  function svParseCSV(line) {
+    var result = [], cur = '', inQ = false;
+    for (var c = 0; c < line.length; c++) {
+      var ch = line[c];
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { result.push(cur.trim()); cur = ''; }
+      else { cur += ch; }
+    }
+    result.push(cur.trim());
+    return result;
+  }
+
+  function loadSV() {
+    document.getElementById('sv-tbody').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:32px;">Cargando...</td></tr>';
+    var url = 'https://docs.google.com/spreadsheets/d/' + SV_SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=Paros_Llenadores&t=' + Date.now();
+    fetch(url)
+      .then(function(r){ return r.text(); })
+      .then(function(csv){
+        var lines = csv.trim().split('\n');
+        svData = [];
+        for (var i = 1; i < lines.length; i++) {
+          var cols = svParseCSV(lines[i]);
+          if (cols.length >= 4 && cols[0]) {
+            svData.push({ fecha: cols[0], hora: cols[1], llenador: cols[2], categoria: cols[3], duracion: cols[4]||'' });
+          }
+        }
+        updateSVKPIs();
+        updateSVCats();
+        renderSV();
+      })
+      .catch(function(){
+        document.getElementById('sv-tbody').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--red);padding:32px;">Error al cargar. Verificá la conexión.</td></tr>';
+      });
+  }
+
+  function updateSVKPIs() {
+    var today = new Date().toLocaleDateString('es-AR');
+    document.getElementById('sv-total').textContent = svData.length;
+    document.getElementById('sv-631').textContent = svData.filter(function(r){ return r.llenador==='631'; }).length;
+    document.getElementById('sv-632').textContent = svData.filter(function(r){ return r.llenador==='632'; }).length;
+    document.getElementById('sv-hoy').textContent = svData.filter(function(r){ return r.fecha===today; }).length;
+  }
+
+  function updateSVCats() {
+    var cats = {};
+    svData.forEach(function(r){ if(r.categoria) cats[r.categoria]=1; });
+    var sel = document.getElementById('sv-fcat');
+    sel.innerHTML = '<option value="">Todas las categorías</option>';
+    Object.keys(cats).sort().forEach(function(c){
+      var o = document.createElement('option'); o.value=c; o.textContent=c; sel.appendChild(o);
+    });
+  }
+
+  function getSVFiltered() {
+    var mes = document.getElementById('sv-fmes').value;
+    var fecha = document.getElementById('sv-ffecha').value;
+    var cat = document.getElementById('sv-fcat').value;
+    var lin = document.getElementById('sv-flin').value;
+    var dur = document.getElementById('sv-fdur').value;
+    return svData.filter(function(r){
+      if (mes) { var p=r.fecha.split('/'); if((p[1]||'').replace(/^0/,'') !== mes.replace(/^0/,'')) return false; }
+      if (fecha) { var d=new Date(fecha); if(r.fecha !== d.toLocaleDateString('es-AR')) return false; }
+      if (cat && r.categoria !== cat) return false;
+      if (lin && r.llenador !== lin) return false;
+      if (dur && r.duracion !== dur) return false;
+      return true;
+    });
+  }
+
+  function renderSV() {
+    var rows = getSVFiltered();
+    var catCount = {};
+    rows.forEach(function(r){ catCount[r.categoria]=(catCount[r.categoria]||0)+1; });
+    var rg = document.getElementById('sv-resumen');
+    rg.innerHTML = Object.keys(catCount).sort(function(a,b){ return catCount[b]-catCount[a]; }).map(function(c){
+      return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;">' +
+        '<span style="font-size:13px;">' + c + '</span>' +
+        '<span style="font-size:22px;font-weight:600;color:var(--blue);">' + catCount[c] + '</span></div>';
+    }).join('');
+
+    var tbody = document.getElementById('sv-tbody');
+    if (rows.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:32px;">Sin registros para los filtros seleccionados</td></tr>';
+      return;
+    }
+    rows.sort(function(a,b){ return b.fecha.localeCompare(a.fecha)||b.hora.localeCompare(a.hora); });
+    tbody.innerHTML = rows.map(function(r){
+      return '<tr style="border-bottom:1px solid var(--border);">' +
+        '<td style="padding:10px 12px;font-size:13px;">' + r.fecha + '</td>' +
+        '<td style="padding:10px 12px;font-size:13px;">' + r.hora + '</td>' +
+        '<td style="padding:10px 12px;font-size:13px;font-weight:600;color:var(--blue-dark);">' + r.llenador + '</td>' +
+        '<td style="padding:10px 12px;font-size:13px;">' + r.categoria + '</td>' +
+        '<td style="padding:10px 12px;font-size:13px;">' + r.duracion + '</td></tr>';
+    }).join('');
+  }
+
+  function exportSV() {
+    var rows = getSVFiltered();
+    if (rows.length === 0) { showToast('No hay datos para exportar'); return; }
+    var data = rows.map(function(r,i){ return {'N\u00b0':i+1,'Fecha':r.fecha,'Hora':r.hora,'Llenador':r.llenador,'Categor\u00eda':r.categoria,'Duraci\u00f3n':r.duracion}; });
+    var wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.json_to_sheet(data);
+    ws['!cols'] = [{wch:4},{wch:12},{wch:8},{wch:10},{wch:24},{wch:18}];
+    XLSX.utils.book_append_sheet(wb, ws, 'Paros Llenadores');
+    var fecha = new Date().toLocaleDateString('es-AR').replace(/\/g,'-');
+    XLSX.writeFile(wb, 'supervisor_llenadores_' + fecha + '.xlsx');
+  }
+
 </script>
 
 <!-- ===== VISTA SUPERVISOR ===== -->
