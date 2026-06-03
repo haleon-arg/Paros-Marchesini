@@ -291,10 +291,14 @@
 </head>
 <body>
 
-<header>
-  <h1>Registro de Paros</h1>
-  <p>Llenadores 631 y 632</p>
-</header>
+<!-- Topbar -->
+<div style="width:100%;max-width:540px;display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+  <div>
+    <h1 style="font-size:20px;font-weight:600;letter-spacing:-0.3px;">Registro de Paros</h1>
+    <p style="font-size:13px;color:var(--text-muted);margin-top:3px;">Llenadores 631 y 632</p>
+  </div>
+  <button onclick="showSupervisor()" style="padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;font-weight:500;cursor:pointer;">Vista supervisor</button>
+</div>
 
 <!-- Llenador -->
 <div class="card">
@@ -542,5 +546,91 @@
     showToast('Excel exportado ✓');
   }
 </script>
+
+<!-- ===== VISTA SUPERVISOR ===== -->
+<div id="sv" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);overflow-y:auto;z-index:100;">
+
+  <!-- Header -->
+  <div style="background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;">
+    <div>
+      <div style="font-size:16px;font-weight:600;">Vista supervisor</div>
+      <div style="font-size:12px;color:var(--text-muted);">Registros consolidados</div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="loadSV()" style="padding:7px 14px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;font-weight:500;cursor:pointer;">Actualizar</button>
+      <button onclick="exportSV()" style="padding:7px 14px;border-radius:6px;border:none;background:#3B6D11;color:#fff;font-size:13px;font-weight:500;cursor:pointer;">Exportar Excel</button>
+      <button onclick="hideSupervisor()" style="padding:7px 14px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;font-weight:500;cursor:pointer;">Volver</button>
+    </div>
+  </div>
+
+  <div style="max-width:1100px;margin:0 auto;padding:20px 16px;">
+
+    <!-- KPIs -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;">
+        <div style="font-size:11px;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Total paros</div>
+        <div style="font-size:28px;font-weight:600;color:var(--blue);" id="sv-total">-</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;">
+        <div style="font-size:11px;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Llenador 631</div>
+        <div style="font-size:28px;font-weight:600;" id="sv-631">-</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;">
+        <div style="font-size:11px;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Llenador 632</div>
+        <div style="font-size:28px;font-weight:600;" id="sv-632">-</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;">
+        <div style="font-size:11px;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Hoy</div>
+        <div style="font-size:28px;font-weight:600;color:#3B6D11;" id="sv-hoy">-</div>
+      </div>
+    </div>
+
+    <!-- Resumen por categoría -->
+    <div id="sv-resumen" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:20px;"></div>
+
+    <!-- Filtros -->
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+      <select id="sv-fmes" onchange="renderSV()" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:13px;color:var(--text);">
+        <option value="">Todos los meses</option>
+        <option value="01">Enero</option><option value="02">Febrero</option><option value="03">Marzo</option>
+        <option value="04">Abril</option><option value="05">Mayo</option><option value="06">Junio</option>
+        <option value="07">Julio</option><option value="08">Agosto</option><option value="09">Septiembre</option>
+        <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+      </select>
+      <input type="date" id="sv-ffecha" onchange="renderSV()" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:13px;color:var(--text);"/>
+      <select id="sv-fcat" onchange="renderSV()" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:13px;color:var(--text);">
+        <option value="">Todas las categorías</option>
+      </select>
+      <select id="sv-flin" onchange="renderSV()" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:13px;color:var(--text);">
+        <option value="">Todos los llenadores</option>
+        <option value="631">631</option>
+        <option value="632">632</option>
+      </select>
+      <select id="sv-fdur" onchange="renderSV()" style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:13px;color:var(--text);">
+        <option value="">Todas las duraciones</option>
+        <option value="Menos de 5 min">Menos de 5 min</option>
+        <option value="Entre 5 y 10 min">Entre 5 y 10 min</option>
+        <option value="Más de 10 min">Más de 10 min</option>
+      </select>
+    </div>
+
+    <!-- Tabla -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr style="background:#1a2e4a;">
+            <th style="color:#fff;font-size:12px;font-weight:500;padding:10px 12px;text-align:left;">Fecha</th>
+            <th style="color:#fff;font-size:12px;font-weight:500;padding:10px 12px;text-align:left;">Hora</th>
+            <th style="color:#fff;font-size:12px;font-weight:500;padding:10px 12px;text-align:left;">Llenador</th>
+            <th style="color:#fff;font-size:12px;font-weight:500;padding:10px 12px;text-align:left;">Categoría</th>
+            <th style="color:#fff;font-size:12px;font-weight:500;padding:10px 12px;text-align:left;">Duración</th>
+          </tr>
+        </thead>
+        <tbody id="sv-tbody"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:32px;">Cargando...</td></tr></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
 </body>
 </html>
