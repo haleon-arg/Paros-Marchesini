@@ -169,7 +169,7 @@
   const CATEGORIES = ['Comprimidos','Pinzas','Rotrasobres','Mordazas','Banda elástica','VR','Otros'];
   const TIMES = ['Menos de 5 min', 'Entre 5 y 10 min', 'Más de 10 min'];
   const STORAGE_KEY = 'paros_llenadores_v1';
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxpEiyejk62kYrJlNhO2j9qlh1BqZw7hPRkDXokX0eueS8xAH0tfb2U0Y6Ja2rlJIxrGg/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz1j39zIUHnEjjw6SBtb06IIHxhiipkEPvkho25qdBpnY1KWco39JGvuY9JSHoLu7c2RQ/exec';
   const SHEET_LLENADORES = 'Paros_Llenadores';
   const SV_SHEET_ID = '166V7Tu-YEZ368aC1SaVqyjtP_PUII-fIMnexxEyqtQ0';
 
@@ -329,7 +329,7 @@
 
   function loadSV() {
     document.getElementById('sv-tbody').innerHTML = '<tr><td colspan="5" class="empty-msg">Cargando...</td></tr>';
-    var url = 'https://script.google.com/macros/s/AKfycbxpEiyejk62kYrJlNhO2j9qlh1BqZw7hPRkDXokX0eueS8xAH0tfb2U0Y6Ja2rlJIxrGg/exec?action=get&sheet=Paros_Llenadores&t=' + Date.now();
+    var url = 'https://script.google.com/macros/s/AKfycbz1j39zIUHnEjjw6SBtb06IIHxhiipkEPvkho25qdBpnY1KWco39JGvuY9JSHoLu7c2RQ/exec?action=get&sheet=Paros_Llenadores&t=' + Date.now();
     fetch(url)
       .then(function(r){ return r.json(); })
       .then(function(data){
@@ -357,7 +357,8 @@
   }
 
   function updateSVKPIs() {
-    var today = new Date().toLocaleDateString('es-AR');
+    var _td = new Date();
+    var today = String(_td.getDate()).padStart(2,'0') + '/' + String(_td.getMonth()+1).padStart(2,'0') + '/' + _td.getFullYear();
     document.getElementById('sv-total').textContent = svData.length;
     document.getElementById('sv-631').textContent = svData.filter(function(r){ return r.llenador==='631'; }).length;
     document.getElementById('sv-632').textContent = svData.filter(function(r){ return r.llenador==='632'; }).length;
