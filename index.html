@@ -383,7 +383,7 @@
     var dur = document.getElementById('sv-fdur').value;
     return svData.filter(function(r){
       if (mes) { var p=r.fecha.split('/'); if((p[1]||'').replace(/^0/,'') !== mes.replace(/^0/,'')) return false; }
-      if (fecha) { var d=new Date(fecha); if(r.fecha !== d.toLocaleDateString('es-AR')) return false; }
+      if (fecha) { var _fp=fecha.split('-'); var _fs=_fp[2]+'/'+_fp[1]+'/'+_fp[0]; if(r.fecha !== _fs) return false; }
       if (cat && r.categoria !== cat) return false;
       if (lin && r.llenador !== lin) return false;
       if (dur && r.duracion !== dur) return false;
